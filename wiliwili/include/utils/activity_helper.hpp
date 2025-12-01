@@ -46,4 +46,7 @@ public:
 
     // 开启动态
     static void openActivity(const std::string& id);
+
+    // 播放本地视频文件
+    static void openLocalVideo(const std::string& filepath);
 };

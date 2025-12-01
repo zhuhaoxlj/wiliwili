@@ -1,0 +1,23 @@
+<brls:Box
+        width="auto"
+        height="auto"
+        grow="1.0"
+        axis="column">
+    
+    <!-- Simple full-screen video player -->
+    <VideoView
+            id="local_video/player"
+            focusable="true"
+            grow="1"
+            width="100%"
+            height="100%"/>
+    
+    <!-- Close button in top-right corner -->
+    <ButtonClose
+            id="local_video/close"
+            focusable="true"
+            positionType="absolute"
+            positionTop="2"
+            positionRight="2"/>
+
+</brls:Box>

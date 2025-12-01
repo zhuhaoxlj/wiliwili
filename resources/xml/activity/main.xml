@@ -59,6 +59,19 @@
             </CustomButton>
 
             <CustomButton
+                    id="main/localVideo"
+                    focusable="true"
+                    highlightCornerRadius="50"
+                    cornerRadius="50"
+                    marginBottom="10"
+                    wireframe="false">
+                <SVGImage
+                        width="48"
+                        height="48"
+                        SVG="@res/svg/play-circle-video.svg"/>
+            </CustomButton>
+
+            <CustomButton
                     id="main/setting"
                     focusable="true"
                     highlightCornerRadius="50"

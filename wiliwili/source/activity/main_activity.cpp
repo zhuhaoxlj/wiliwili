@@ -63,12 +63,16 @@ void MainActivity::onContentAvailable() {
                 return (brls::View*)this->tabFrame->getActiveTab();
             } else if (direction == brls::FocusDirection::UP) {
                 return (brls::View*)this->tabFrame->getSidebar();
+            } else if (direction == brls::FocusDirection::DOWN) {
+                return (brls::View*)this->localVideoBtn;
             }
         } else if (tabFrame->getSideBarPosition() == AutoTabBarPosition::TOP) {
             if (direction == brls::FocusDirection::DOWN) {
                 return (brls::View*)this->tabFrame->getActiveTab();
             } else if (direction == brls::FocusDirection::LEFT) {
                 return (brls::View*)this->tabFrame->getSidebar();
+            } else if (direction == brls::FocusDirection::RIGHT) {
+                return (brls::View*)this->localVideoBtn;
             }
         }
         return (brls::View*)nullptr;
@@ -78,13 +82,13 @@ void MainActivity::onContentAvailable() {
             if (direction == brls::FocusDirection::RIGHT) {
                 return (brls::View*)this->tabFrame->getActiveTab();
             } else if (direction == brls::FocusDirection::UP) {
-                return (brls::View*)this->inboxBtn;
+                return (brls::View*)this->localVideoBtn;
             }
         } else if (tabFrame->getSideBarPosition() == AutoTabBarPosition::TOP) {
             if (direction == brls::FocusDirection::DOWN) {
                 return (brls::View*)this->tabFrame->getActiveTab();
             } else if (direction == brls::FocusDirection::LEFT) {
-                return (brls::View*)this->inboxBtn;
+                return (brls::View*)this->localVideoBtn;
             }
         }
         return (brls::View*)nullptr;
@@ -106,4 +110,44 @@ void MainActivity::onContentAvailable() {
         }
     });
     this->inboxBtn->addGestureRecognizer(new brls::TapGestureRecognizer(this->inboxBtn));
+
+    this->localVideoBtn->registerClickAction([](brls::View* view) -> bool {
+        std::string videoPath = "romfs:/pictures/network.mp4";
+        Intent::openLocalVideo(videoPath);
+        return true;
+    });
+
+    this->localVideoBtn->getFocusEvent()->subscribe([this](bool value) {
+        SVGImage* image = dynamic_cast<SVGImage*>(this->localVideoBtn->getChildren()[0]);
+        if (!image) return;
+        if (value) {
+            image->setImageFromSVGRes("svg/play-circle-video-activate.svg");
+        } else {
+            image->setImageFromSVGRes("svg/play-circle-video.svg");
+        }
+    });
+
+    this->localVideoBtn->setCustomNavigation([this](brls::FocusDirection direction) {
+        if (tabFrame->getSideBarPosition() == AutoTabBarPosition::LEFT) {
+            if (direction == brls::FocusDirection::RIGHT) {
+                return (brls::View*)this->tabFrame->getActiveTab();
+            } else if (direction == brls::FocusDirection::UP) {
+                return (brls::View*)this->inboxBtn;
+            } else if (direction == brls::FocusDirection::DOWN) {
+                return (brls::View*)this->settingBtn;
+            }
+        } else if (tabFrame->getSideBarPosition() == AutoTabBarPosition::TOP) {
+            if (direction == brls::FocusDirection::DOWN) {
+                return (brls::View*)this->tabFrame->getActiveTab();
+            } else if (direction == brls::FocusDirection::LEFT) {
+                return (brls::View*)this->inboxBtn;
+            } else if (direction == brls::FocusDirection::RIGHT) {
+                return (brls::View*)this->settingBtn;
+            }
+        }
+        return (brls::View*)nullptr;
+    });
+    this->localVideoBtn->addGestureRecognizer(new brls::TapGestureRecognizer(this->localVideoBtn));
+
+    this->localVideoBtn->addGestureRecognizer(new brls::TapGestureRecognizer(this->localVideoBtn));
 }

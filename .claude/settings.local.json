@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dkp-pacman:*)",
+      "Bash(sudo dkp-pacman:*)",
+      "Bash(PKG_CONFIG_LIBDIR=/opt/devkitpro/portlibs/switch/lib/pkgconfig pkg-config:*)",
+      "Bash(sudo rm:*)",
+      "Bash(git log:*)",
+      "mcp__serena__find_file",
+      "mcp__serena__search_for_pattern",
+      "mcp__serena__activate_project",
+      "mcp__serena__check_onboarding_performed",
+      "mcp__serena__get_symbols_overview"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

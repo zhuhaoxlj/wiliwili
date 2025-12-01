@@ -19,7 +19,20 @@
 #include <SDL2/SDL_main.h>
 #endif
 
+#ifdef __SWITCH__
+#include <switch.h>
+#endif
+
 int main(int argc, char* argv[]) {
+    // Enable DEBUG logging by default on Switch for nxlink
+#ifdef __SWITCH__
+    // Initialize sockets for nxlink logging
+    socketInitializeDefault();
+    nxlinkStdio();
+    brls::Logger::setLogLevel(brls::LogLevel::LOG_DEBUG);
+    brls::Logger::info("=== Switch nxlink logging initialized ===");
+#endif
+
     for (int i = 1; i < argc; i++) {
         if (std::strcmp(argv[i], "-d") == 0) {
             brls::Logger::setLogLevel(brls::LogLevel::LOG_DEBUG);
@@ -102,6 +115,11 @@ int main(int argc, char* argv[]) {
 
     // Cleanup curl and Check whether restart is required
     ProgramConfig::instance().exit(argv);
+
+#ifdef __SWITCH__
+    // Cleanup sockets
+    socketExit();
+#endif
 
     // Exit
     return EXIT_SUCCESS;

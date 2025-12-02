@@ -1,0 +1,93 @@
+<brls:AppletFrame
+        iconInterpolation="linear"
+        headerHidden="true"
+        footerHidden="false">
+
+    <brls:Box
+            backgroundColor="@theme/brls/background"
+            axis="column"
+            alignItems="center"
+            justifyContent="center">
+
+        <brls:ScrollingFrame
+                width="100%"
+                height="auto"
+                marginTop="40"
+                scrollingBehavior="centered"
+                grow="1.0">
+
+            <brls:Box
+                    width="600"
+                    height="auto"
+                    axis="column"
+                    alignItems="stretch"
+                    marginLeft="auto"
+                    marginRight="auto"
+                    paddingLeft="20"
+                    paddingRight="20"
+                    paddingTop="20"
+                    paddingBottom="40">
+
+                <brls:Header
+                        width="auto"
+                        height="auto"
+                        title="@i18n/wiliwili/nas/config/header"
+                        marginBottom="0px"/>
+
+                <brls:Box
+                        width="100%"
+                        height="auto"
+                        axis="column"
+                        marginBottom="30px">
+
+                    <brls:InputCell
+                            id="nas/server/input"/>
+
+                    <brls:InputCell
+                            id="nas/username/input"/>
+
+                    <brls:InputCell
+                            id="nas/password/input"/>
+
+                </brls:Box>
+
+                <brls:Header
+                        width="auto"
+                        height="auto"
+                        title="@i18n/wiliwili/nas/config/actions"
+                        marginBottom="0px"/>
+
+                <brls:Box
+                        width="100%"
+                        height="auto"
+                        axis="column"
+                        marginBottom="30px">
+
+                    <brls:RadioCell
+                            id="nas/test/button"
+                            title="@i18n/wiliwili/nas/config/test"/>
+
+                    <brls:RadioCell
+                            id="nas/save/button"
+                            title="@i18n/wiliwili/nas/config/save"/>
+
+                </brls:Box>
+
+                <brls:Label
+                        id="nas/status/label"
+                        text=""
+                        textColor="@theme/font/grey"
+                        fontSize="14"
+                        marginTop="10"
+                        marginLeft="20"/>
+
+            </brls:Box>
+        </brls:ScrollingFrame>
+
+        <ButtonClose
+                positionType="absolute"
+                positionTop="10"
+                positionRight="10"/>
+    </brls:Box>
+
+</brls:AppletFrame>

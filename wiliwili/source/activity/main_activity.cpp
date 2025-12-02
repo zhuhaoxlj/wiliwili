@@ -19,6 +19,7 @@
 #include "activity/main_activity.hpp"
 #include "utils/activity_helper.hpp"
 #include "utils/dialog_helper.hpp"
+#include "utils/config_helper.hpp"
 #include "view/custom_button.hpp"
 #include "view/auto_tab_frame.hpp"
 #include "view/svg_image.hpp"
@@ -82,13 +83,13 @@ void MainActivity::onContentAvailable() {
             if (direction == brls::FocusDirection::RIGHT) {
                 return (brls::View*)this->tabFrame->getActiveTab();
             } else if (direction == brls::FocusDirection::UP) {
-                return (brls::View*)this->localVideoBtn;
+                return (brls::View*)this->nasVideoBtn;
             }
         } else if (tabFrame->getSideBarPosition() == AutoTabBarPosition::TOP) {
             if (direction == brls::FocusDirection::DOWN) {
                 return (brls::View*)this->tabFrame->getActiveTab();
             } else if (direction == brls::FocusDirection::LEFT) {
-                return (brls::View*)this->localVideoBtn;
+                return (brls::View*)this->nasVideoBtn;
             }
         }
         return (brls::View*)nullptr;
@@ -134,7 +135,7 @@ void MainActivity::onContentAvailable() {
             } else if (direction == brls::FocusDirection::UP) {
                 return (brls::View*)this->inboxBtn;
             } else if (direction == brls::FocusDirection::DOWN) {
-                return (brls::View*)this->settingBtn;
+                return (brls::View*)this->nasVideoBtn;
             }
         } else if (tabFrame->getSideBarPosition() == AutoTabBarPosition::TOP) {
             if (direction == brls::FocusDirection::DOWN) {
@@ -142,12 +143,53 @@ void MainActivity::onContentAvailable() {
             } else if (direction == brls::FocusDirection::LEFT) {
                 return (brls::View*)this->inboxBtn;
             } else if (direction == brls::FocusDirection::RIGHT) {
-                return (brls::View*)this->settingBtn;
+                return (brls::View*)this->nasVideoBtn;
             }
         }
         return (brls::View*)nullptr;
     });
     this->localVideoBtn->addGestureRecognizer(new brls::TapGestureRecognizer(this->localVideoBtn));
 
-    this->localVideoBtn->addGestureRecognizer(new brls::TapGestureRecognizer(this->localVideoBtn));
+    // NAS Video button - opens NAS browser or config based on configuration state
+    this->nasVideoBtn->registerClickAction([](brls::View* view) -> bool {
+        NASConfig nasConfig = ProgramConfig::instance().getNASConfig();
+        if (nasConfig.enabled) {
+            Intent::openNASBrowser(nasConfig.lastPath.empty() ? "/" : nasConfig.lastPath);
+        } else {
+            Intent::openNASConfig();
+        }
+        return true;
+    });
+
+    this->nasVideoBtn->getFocusEvent()->subscribe([this](bool value) {
+        SVGImage* image = dynamic_cast<SVGImage*>(this->nasVideoBtn->getChildren()[0]);
+        if (!image) return;
+        if (value) {
+            image->setImageFromSVGRes("svg/ico-nas-activate.svg");
+        } else {
+            image->setImageFromSVGRes("svg/ico-nas.svg");
+        }
+    });
+
+    this->nasVideoBtn->setCustomNavigation([this](brls::FocusDirection direction) {
+        if (tabFrame->getSideBarPosition() == AutoTabBarPosition::LEFT) {
+            if (direction == brls::FocusDirection::RIGHT) {
+                return (brls::View*)this->tabFrame->getActiveTab();
+            } else if (direction == brls::FocusDirection::UP) {
+                return (brls::View*)this->localVideoBtn;
+            } else if (direction == brls::FocusDirection::DOWN) {
+                return (brls::View*)this->settingBtn;
+            }
+        } else if (tabFrame->getSideBarPosition() == AutoTabBarPosition::TOP) {
+            if (direction == brls::FocusDirection::DOWN) {
+                return (brls::View*)this->tabFrame->getActiveTab();
+            } else if (direction == brls::FocusDirection::LEFT) {
+                return (brls::View*)this->localVideoBtn;
+            } else if (direction == brls::FocusDirection::RIGHT) {
+                return (brls::View*)this->settingBtn;
+            }
+        }
+        return (brls::View*)nullptr;
+    });
+    this->nasVideoBtn->addGestureRecognizer(new brls::TapGestureRecognizer(this->nasVideoBtn));
 }

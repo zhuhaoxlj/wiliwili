@@ -318,6 +318,11 @@ void MPVCore::init() {
     mpvSetOptionString(mpv, "reset-on-next-file", "speed,pause");
     mpvSetOptionString(mpv, "vo", "libmpv");
     mpvSetOptionString(mpv, "pulse-latency-hacks", "no");
+    
+    // 字幕设置：默认启用内封字幕
+    mpvSetOptionString(mpv, "sid", "auto");           // 自动选择字幕轨道
+    mpvSetOptionString(mpv, "sub-auto", "fuzzy");     // 自动加载外挂字幕
+    mpvSetOptionString(mpv, "sub-visibility", "yes"); // 显示字幕
 
     mpvSetOption(mpv, "brightness", MPV_FORMAT_DOUBLE, &MPVCore::VIDEO_BRIGHTNESS);
     mpvSetOption(mpv, "contrast", MPV_FORMAT_DOUBLE, &MPVCore::VIDEO_CONTRAST);

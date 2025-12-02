@@ -300,6 +300,13 @@ std::unordered_map<SettingItem, ProgramOption> ProgramConfig::SETTING_MAP = {
     /// Custom
     {SettingItem::UP_FILTER, {"up_filter", {}, {}, 0}},
     {SettingItem::LIVE_DANMAKU_FILTER_LEVEL, {"live_danmaku_filter_level", {}, {}, 0}},
+
+    /// NAS 配置
+    {SettingItem::NAS_SERVER_URL, {"nas_server_url", {}, {}, 0}},
+    {SettingItem::NAS_USERNAME, {"nas_username", {}, {}, 0}},
+    {SettingItem::NAS_PASSWORD, {"nas_password", {}, {}, 0}},
+    {SettingItem::NAS_LAST_PATH, {"nas_last_path", {}, {}, 0}},
+    {SettingItem::NAS_ENABLED, {"nas_enabled", {}, {}, 0}},
 };
 
 ProgramConfig::ProgramConfig() = default;
@@ -1264,4 +1271,22 @@ void ProgramConfig::toggleFullscreen() {
     VideoContext::FULLSCREEN = value;
     brls::Application::getPlatform()->getVideoContext()->fullScreen(value);
     GA("player_setting", {{"fullscreen", value ? "true" : "false"}});
+}
+
+NASConfig ProgramConfig::getNASConfig() {
+    NASConfig config;
+    config.serverUrl = getSettingItem(SettingItem::NAS_SERVER_URL, std::string{""});
+    config.username = getSettingItem(SettingItem::NAS_USERNAME, std::string{""});
+    config.password = getSettingItem(SettingItem::NAS_PASSWORD, std::string{""});
+    config.lastPath = getSettingItem(SettingItem::NAS_LAST_PATH, std::string{"/"});
+    config.enabled = getSettingItem(SettingItem::NAS_ENABLED, false);
+    return config;
+}
+
+void ProgramConfig::setNASConfig(const NASConfig& config) {
+    setSettingItem(SettingItem::NAS_SERVER_URL, config.serverUrl, false);
+    setSettingItem(SettingItem::NAS_USERNAME, config.username, false);
+    setSettingItem(SettingItem::NAS_PASSWORD, config.password, false);
+    setSettingItem(SettingItem::NAS_LAST_PATH, config.lastPath, false);
+    setSettingItem(SettingItem::NAS_ENABLED, config.enabled, true);  // 最后一个保存时写入磁盘
 }

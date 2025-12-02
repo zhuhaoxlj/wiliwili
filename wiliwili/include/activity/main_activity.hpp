@@ -35,5 +35,6 @@ private:
     BRLS_BIND(CustomButton, settingBtn, "main/setting");
     BRLS_BIND(CustomButton, inboxBtn, "main/inbox");
     BRLS_BIND(CustomButton, localVideoBtn, "main/localVideo");
+    BRLS_BIND(CustomButton, nasVideoBtn, "main/nasVideo");
     BRLS_BIND(AutoTabFrame, tabFrame, "main/tabFrame");
 };

@@ -1,0 +1,155 @@
+# 实现计划
+
+- [x] 1. 创建 NAS 配置数据结构和存储
+  - [x] 1.1 创建 NASConfig 结构体
+    - 创建 `wiliwili/include/api/nas/nas_config.hpp`
+    - 定义 serverUrl、username、password、lastPath、enabled 字段
+    - 实现 buildUrl() 和 buildAuthUrl() 方法
+    - _需求: 1.1, 1.2, 1.3_
+  - [x] 1.2 扩展 ProgramConfig 支持 NAS 配置
+    - 在 `config_helper.hpp` 中添加 NAS 相关的 SettingItem 枚举
+    - 添加 NAS 配置的 getter/setter 方法
+    - 实现配置的 JSON 序列化/反序列化
+    - _需求: 1.4, 1.5_
+  - [ ] 1.3 编写配置持久化属性测试
+    - **Property 2: 配置持久化往返**
+    - **Validates: Requirements 1.4, 1.5**
+  - [ ]* 1.4 编写地址验证属性测试
+    - **Property 1: NAS 地址格式验证**
+    - **Validates: Requirements 1.2**
+
+- [x] 2. 实现 WebDAV 客户端
+  - [x] 2.1 创建 WebDAVItem 和 WebDAVClient 类
+    - 创建 `wiliwili/include/api/nas/webdav_client.hpp`
+    - 创建 `wiliwili/source/api/nas/webdav_client.cpp`
+    - 定义 WebDAVItem 数据结构（name、path、isDirectory、size、contentType）
+    - 实现 WebDAVClient 构造函数
+    - _需求: 2.1, 2.2_
+  - [x] 2.2 实现 PROPFIND 请求和 XML 解析
+    - 实现 listDirectory() 方法发送 PROPFIND 请求
+    - 使用 tinyxml2 解析 WebDAV XML 响应
+    - 提取文件/文件夹信息
+    - _需求: 2.2, 2.3, 4.4_
+  - [ ]* 2.3 编写 XML 解析属性测试
+    - **Property 3: WebDAV PROPFIND 响应解析**
+    - **Validates: Requirements 2.2, 4.4**
+  - [x] 2.4 实现 URL 编码和构建
+    - 实现 urlEncode() 静态方法处理中文和特殊字符
+    - 实现带认证信息的 URL 构建
+    - _需求: 4.1, 4.2, 4.3_
+  - [ ]* 2.5 编写 URL 构建属性测试
+    - **Property 6: WebDAV URL 构建**
+    - **Validates: Requirements 3.1, 4.1, 4.2, 4.3**
+  - [x] 2.6 实现视频文件过滤
+    - 实现 isVideoFile() 静态方法
+    - 支持 mp4、mkv、avi、mov、wmv、flv、webm、m4v、ts、rmvb 等格式
+    - 大小写不敏感匹配
+    - _需求: 2.4_
+  - [ ]* 2.7 编写视频文件过滤属性测试
+    - **Property 4: 视频文件过滤**
+    - **Validates: Requirements 2.4**
+  - [x] 2.8 实现连接检查方法
+    - 实现 checkConnection() 方法
+    - 发送简单的 PROPFIND 请求验证连接和认证
+    - _需求: 2.1_
+
+- [x] 3. 检查点 - 确保核心功能测试通过
+  - 确保所有测试通过，如有问题请询问用户
+
+- [x] 4. 创建 NAS 配置界面
+  - [x] 4.1 创建配置界面 XML 布局
+    - 创建 `resources/xml/activity/nas_config_activity.xml`
+    - 添加服务器地址、用户名、密码输入框
+    - 添加测试连接和保存按钮
+    - _需求: 1.1, 1.3_
+  - [x] 4.2 实现 NASConfigActivity 类
+    - 创建 `wiliwili/include/activity/nas_config_activity.hpp`
+    - 创建 `wiliwili/source/activity/nas_config_activity.cpp`
+    - 绑定 UI 组件
+    - 实现 testConnection() 方法
+    - 实现 saveConfig() 方法
+    - _需求: 1.1, 1.2, 1.3, 1.4_
+
+- [x] 5. 创建 NAS 文件浏览界面
+  - [x] 5.1 创建文件浏览界面 XML 布局
+    - 创建 `resources/xml/activity/nas_browser_activity.xml`
+    - 添加路径显示标签
+    - 添加文件列表 RecyclingGrid
+    - _需求: 2.2, 2.3_
+  - [x] 5.2 创建文件列表项 XML 布局
+    - 创建 `resources/xml/views/nas_file_item.xml`
+    - 显示文件/文件夹图标、名称、大小
+    - _需求: 2.2_
+  - [x] 5.3 实现 NASBrowserActivity 类
+    - 创建 `wiliwili/include/activity/nas_browser_activity.hpp`
+    - 创建 `wiliwili/source/activity/nas_browser_activity.cpp`
+    - 实现 loadDirectory() 方法加载目录内容
+    - 实现 onItemSelected() 方法处理文件/文件夹点击
+    - _需求: 2.2, 2.3, 2.4_
+  - [x] 5.4 实现目录导航功能
+    - 实现 navigateUp() 方法返回上级目录
+    - 实现路径计算逻辑
+    - 注册返回键处理
+    - _需求: 2.5_
+  - [ ]* 5.5 编写父目录导航属性测试
+    - **Property 5: 父目录导航**
+    - **Validates: Requirements 2.5**
+  - [x] 5.6 实现路径记忆功能
+    - 退出时保存当前路径到配置
+    - 进入时恢复上次路径
+    - 处理路径不存在的情况
+    - _需求: 6.1, 6.2, 6.3_
+  - [ ]* 5.7 编写路径记忆属性测试
+    - **Property 7: 路径记忆往返**
+    - **Validates: Requirements 6.1, 6.2**
+
+- [x] 6. 实现 NAS 视频播放
+  - [x] 6.1 扩展 Intent 类
+    - 在 `activity_helper.hpp` 中添加 openNASBrowser()、openNASConfig()、playNASVideo() 方法
+    - 在 `activity_helper.cpp` 中实现这些方法
+    - _需求: 3.1, 5.2, 5.3_
+  - [x] 6.2 实现视频播放功能
+    - 在 NASBrowserActivity 中处理视频文件点击
+    - 构建带认证的视频 URL
+    - 调用 Intent::playNASVideo() 或复用 LocalVideoPlayerActivity
+    - _需求: 3.1, 3.2, 3.3_
+
+- [x] 7. 在主界面添加 NAS 入口
+  - [x] 7.1 添加 NAS 图标资源
+    - 创建或复用 NAS 相关的 SVG 图标
+    - 添加普通状态和激活状态图标
+    - _需求: 5.1_
+  - [x] 7.2 修改主界面布局
+    - 在 `resources/xml/activity/main_activity.xml` 中添加 NAS 按钮
+    - 设置按钮位置和样式
+    - _需求: 5.1_
+  - [x] 7.3 在 MainActivity 中注册 NAS 按钮事件
+    - 绑定 NAS 按钮组件
+    - 注册点击事件
+    - 根据配置状态决定打开配置界面还是浏览界面
+    - 实现焦点状态图标切换
+    - _需求: 5.2, 5.3, 5.4, 5.5_
+
+- [x] 8. 实现错误处理
+  - [x] 8.1 添加网络错误处理
+    - 处理连接超时
+    - 处理认证失败 (401)
+    - 处理路径不存在 (404)
+    - 显示用户友好的错误提示
+    - _需求: 3.5_
+  - [x] 8.2 添加播放错误处理
+    - 处理视频格式不支持
+    - 处理缓冲超时
+    - 提供重试选项
+    - _需求: 3.4, 3.5_
+
+- [ ] 9. 添加国际化支持
+  - [ ] 9.1 添加中文字符串
+    - 在 `resources/i18n/zh-Hans/` 中添加 NAS 相关的翻译字符串
+    - 包括界面文本、错误提示等
+  - [ ] 9.2 添加英文字符串
+    - 在 `resources/i18n/en-US/` 中添加对应的英文翻译
+
+- [x] 10. 最终检查点 - 确保所有测试通过
+  - 确保所有测试通过，如有问题请询问用户
+  - 测试完整的用户流程：配置 -> 浏览 -> 播放

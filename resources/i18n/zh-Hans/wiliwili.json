@@ -481,5 +481,55 @@
   "dialog": {
     "not_supported": "不支持此功能",
     "quit_hint": "正在退出应用..."
+  },
+  "nas": {
+    "config": {
+      "header": "NAS 配置",
+      "server": "服务器地址",
+      "server_hint": "WebDAV 服务器地址",
+      "username": "用户名",
+      "username_hint": "NAS 登录用户名",
+      "password": "密码",
+      "password_hint": "NAS 登录密码",
+      "actions": "操作",
+      "test": "测试连接",
+      "save": "保存配置"
+    },
+    "status": {
+      "testing": "正在测试连接...",
+      "success": "连接成功！",
+      "saved": "配置已保存",
+      "loading": "正在加载..."
+    },
+    "error": {
+      "empty_server": "请输入服务器地址",
+      "invalid_server": "服务器地址格式无效",
+      "auth_failed": "认证失败，请检查用户名和密码",
+      "path_not_found": "路径不存在",
+      "connection_failed": "连接失败",
+      "not_configured": "NAS 未配置",
+      "timeout": "连接超时，请检查网络连接",
+      "server_error": "服务器错误",
+      "network_error": "网络错误",
+      "retry": "重试",
+      "go_config": "前往配置"
+    },
+    "browser": {
+      "folder": "文件夹",
+      "file": "文件",
+      "video": "视频",
+      "empty": "此目录为空",
+      "items": "个项目",
+      "play_hint": "即将播放"
+    },
+    "player": {
+      "error": {
+        "unsupported_format": "不支持的视频格式",
+        "buffer_timeout": "缓冲超时，网络不稳定",
+        "playback_failed": "播放失败",
+        "retry": "重试",
+        "back": "返回"
+      }
+    }
   }
 }

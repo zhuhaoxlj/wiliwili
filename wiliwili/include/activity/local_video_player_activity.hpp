@@ -6,6 +6,7 @@
 
 #include <borealis/core/activity.hpp>
 #include <borealis/core/bind.hpp>
+#include "utils/event_helper.hpp"
 
 class VideoView;
 
@@ -25,4 +26,13 @@ public:
 private:
     std::string videoPath;
     BRLS_BIND(VideoView, video, "local_video/player");
+    
+    // MPV event subscription ID for error handling
+    brls::Event<MpvEventEnum>::Subscription mpvEventSubscriptionId;
+    
+    // Handle playback errors
+    void handlePlaybackError();
+    
+    // Show error dialog with retry option
+    void showPlaybackErrorDialog(const std::string& message);
 };

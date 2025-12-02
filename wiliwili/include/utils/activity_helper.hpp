@@ -49,4 +49,13 @@ public:
 
     // 播放本地视频文件
     static void openLocalVideo(const std::string& filepath);
+
+    // 开启 NAS 配置界面
+    static void openNASConfig();
+
+    // 开启 NAS 文件浏览器
+    static void openNASBrowser(const std::string& path = "/");
+
+    // 播放 NAS 视频
+    static void playNASVideo(const std::string& url, const std::string& title);
 };

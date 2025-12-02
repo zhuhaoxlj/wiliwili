@@ -1,0 +1,72 @@
+<brls:AppletFrame
+        iconInterpolation="linear"
+        headerHidden="true"
+        footerHidden="false">
+
+    <brls:Box
+            backgroundColor="@theme/brls/background"
+            axis="column"
+            width="100%"
+            height="100%">
+
+        <!-- Header with path display -->
+        <brls:Box
+                width="100%"
+                height="60"
+                paddingLeft="30"
+                paddingRight="30"
+                alignItems="center"
+                backgroundColor="@theme/color/grey_1">
+
+            <brls:Label
+                    id="nas/path/label"
+                    text="/"
+                    fontSize="18"
+                    singleLine="true"
+                    grow="1"
+                    textColor="@theme/brls/text"/>
+
+            <brls:Label
+                    id="nas/status/label"
+                    text=""
+                    fontSize="14"
+                    textColor="@theme/font/grey"
+                    marginLeft="20"/>
+
+        </brls:Box>
+
+        <!-- File list using RecyclerFrame -->
+        <brls:RecyclerFrame
+                id="nas/file/list"
+                width="100%"
+                grow="1"
+                paddingTop="10"
+                paddingBottom="10"
+                paddingLeft="20"
+                paddingRight="20"/>
+
+        <!-- Loading indicator -->
+        <brls:Box
+                id="nas/loading/box"
+                visibility="gone"
+                positionType="absolute"
+                width="100%"
+                height="100%"
+                justifyContent="center"
+                alignItems="center"
+                backgroundColor="@theme/brls/backdrop">
+
+            <brls:ProgressSpinner
+                    id="nas/loading/spinner"
+                    width="50"
+                    height="50"/>
+
+        </brls:Box>
+
+        <ButtonClose
+                positionType="absolute"
+                positionTop="10"
+                positionRight="10"/>
+    </brls:Box>
+
+</brls:AppletFrame>

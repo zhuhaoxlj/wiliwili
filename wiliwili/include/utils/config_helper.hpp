@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <nlohmann/json.hpp>
 #include "analytics.h"
+#include "api/nas/nas_config.hpp"
 #include "borealis/core/singleton.hpp"
 #include "borealis/core/logger.hpp"
 
@@ -123,6 +124,12 @@ enum class SettingItem {
     SHORTCUT_VIDEO_SPEEDUP, // 视频倍速快捷键
     SHORTCUT_VIDEO_OSD, // 切换OSD显示
     SHORTCUT_VIDEO_PAUSE, // 视频播放暂停快捷键
+    // NAS 相关配置
+    NAS_SERVER_URL,   // NAS 服务器地址
+    NAS_USERNAME,     // NAS 用户名
+    NAS_PASSWORD,     // NAS 密码
+    NAS_LAST_PATH,    // NAS 上次浏览路径
+    NAS_ENABLED,      // NAS 是否已配置
 };
 
 class APPVersion : public brls::Singleton<APPVersion> {
@@ -280,6 +287,10 @@ public:
     void addSeasonCustomSetting(unsigned int key, const SeasonCustomItem& item);
 
     void setSeasonCustomSetting(const SeasonCustomSetting& setting);
+
+    // NAS 配置相关方法
+    NASConfig getNASConfig();
+    void setNASConfig(const NASConfig& config);
 
     void toggleFullscreen();
 

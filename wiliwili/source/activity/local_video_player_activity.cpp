@@ -4,8 +4,11 @@
 
 #include "activity/local_video_player_activity.hpp"
 #include "view/video_view.hpp"
+#include "view/mpv_core.hpp"
+#include "utils/event_helper.hpp"
 #include <borealis/core/logger.hpp>
 #include <borealis/core/application.hpp>
+#include <borealis/views/dialog.hpp>
 
 LocalVideoPlayerActivity::LocalVideoPlayerActivity(const std::string& filepath) 
     : videoPath(filepath) {
@@ -14,6 +17,8 @@ LocalVideoPlayerActivity::LocalVideoPlayerActivity(const std::string& filepath)
 
 LocalVideoPlayerActivity::~LocalVideoPlayerActivity() {
     brls::Logger::debug("LocalVideoPlayerActivity destroyed");
+    // Unsubscribe from MPV events
+    MPV_E->unsubscribe(mpvEventSubscriptionId);
     // 注意：不要在这里调用 video->stop()
     // MPV 的 stop 命令是异步的，可能在 VideoView 销毁后才触发事件
     // 这会导致访问已释放的内存而崩溃
@@ -60,6 +65,9 @@ void LocalVideoPlayerActivity::onContentAvailable() {
                 this->video->toggleOSD();
                 return true;
             }
+            // 停止视频播放
+            brls::Logger::info("LocalVideoPlayerActivity: Stopping video playback");
+            this->video->stop();
             // 直接退出 Activity（本地视频播放器没有"非全屏"模式）
             brls::Logger::info("LocalVideoPlayerActivity: Back button pressed, exiting activity");
             brls::Application::popActivity();
@@ -82,6 +90,9 @@ void LocalVideoPlayerActivity::onContentAvailable() {
                 this->video->toggleOSD();
                 return true;
             }
+            // 停止视频播放
+            brls::Logger::info("LocalVideoPlayerActivity: Stopping video playback");
+            this->video->stop();
             // 直接退出 Activity
             brls::Logger::info("LocalVideoPlayerActivity: Back button pressed, exiting activity");
             brls::Application::popActivity();
@@ -89,4 +100,68 @@ void LocalVideoPlayerActivity::onContentAvailable() {
         },
         true
     );
+    
+    // Subscribe to MPV events for error handling
+    mpvEventSubscriptionId = MPV_E->subscribe([this](MpvEventEnum event) {
+        if (event == MpvEventEnum::MPV_FILE_ERROR) {
+            brls::Logger::error("LocalVideoPlayerActivity: MPV file error detected");
+            handlePlaybackError();
+        }
+    });
+}
+
+void LocalVideoPlayerActivity::handlePlaybackError() {
+    brls::Logger::error("LocalVideoPlayerActivity: Handling playback error for: {}", videoPath);
+    
+    // Get the error code from MPV core
+    int errorCode = MPVCore::instance().mpv_error_code;
+    brls::Logger::error("LocalVideoPlayerActivity: MPV error code: {}", errorCode);
+    
+    // Determine the error message based on the error code
+    std::string errorMsg;
+    
+    // Check if this is a network URL (NAS video)
+    bool isNetworkUrl = videoPath.find("http://") == 0 || videoPath.find("https://") == 0;
+    
+    if (isNetworkUrl) {
+        // Network-related errors for NAS videos
+        if (errorCode == -5 || errorCode == -6) {
+            // MPV_ERROR_LOADING_FAILED or similar
+            errorMsg = "wiliwili/nas/player/error/buffer_timeout"_i18n;
+        } else if (errorCode == -3) {
+            // MPV_ERROR_UNSUPPORTED
+            errorMsg = "wiliwili/nas/player/error/unsupported_format"_i18n;
+        } else {
+            errorMsg = "wiliwili/nas/player/error/playback_failed"_i18n;
+        }
+    } else {
+        // Local file errors
+        if (errorCode == -3) {
+            errorMsg = "wiliwili/nas/player/error/unsupported_format"_i18n;
+        } else {
+            errorMsg = "wiliwili/nas/player/error/playback_failed"_i18n;
+        }
+    }
+    
+    showPlaybackErrorDialog(errorMsg);
+}
+
+void LocalVideoPlayerActivity::showPlaybackErrorDialog(const std::string& message) {
+    brls::sync([this, message]() {
+        auto dialog = new brls::Dialog(message);
+        
+        // Add retry button
+        dialog->addButton("wiliwili/nas/player/error/retry"_i18n, [this]() {
+            brls::Logger::info("LocalVideoPlayerActivity: Retrying playback");
+            // Retry playing the video
+            this->video->setUrl(videoPath);
+        });
+        
+        // Add back button
+        dialog->addButton("wiliwili/nas/player/error/back"_i18n, []() {
+            brls::Application::popActivity();
+        });
+        
+        dialog->open();
+    });
 }

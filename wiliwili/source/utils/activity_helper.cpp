@@ -15,10 +15,13 @@
 #include "activity/dlna_activity.hpp"
 #include "activity/dynamic_activity.hpp"
 #include "activity/local_video_player_activity.hpp"
+#include "activity/nas_config_activity.hpp"
+#include "activity/nas_browser_activity.hpp"
 #include "fragment/mine_collection_video_list.hpp"
 #include "fragment/inbox_view.hpp"
 #include "utils/activity_helper.hpp"
 #include "utils/config_helper.hpp"
+#include "api/nas/nas_config.hpp"
 
 #include "presenter/video_detail.hpp"
 
@@ -128,5 +131,31 @@ void Intent::openActivity(const std::string& id) {
 void Intent::openLocalVideo(const std::string& filepath) {
     brls::Logger::info("Intent::openLocalVideo called with filepath: {}", filepath);
     auto activity = new LocalVideoPlayerActivity(filepath);
+    brls::Application::pushActivity(activity, brls::TransitionAnimation::NONE);
+}
+
+void Intent::openNASConfig() {
+    auto activity = new NASConfigActivity();
+    brls::Application::pushActivity(activity);
+}
+
+void Intent::openNASBrowser(const std::string& path) {
+    auto& conf = ProgramConfig::instance();
+    NASConfig nasConfig = conf.getNASConfig();
+    if (!nasConfig.enabled) {
+        // If NAS is not configured, open config activity
+        openNASConfig();
+    } else {
+        // Open NAS browser activity
+        auto activity = new NASBrowserActivity(path);
+        brls::Application::pushActivity(activity, brls::TransitionAnimation::NONE);
+    }
+}
+
+void Intent::playNASVideo(const std::string& url, const std::string& title) {
+    brls::Logger::info("Intent::playNASVideo called with url: {}, title: {}", url, title);
+    // Reuse LocalVideoPlayerActivity for NAS video playback
+    // The LocalVideoPlayerActivity can handle both local files and network URLs
+    auto activity = new LocalVideoPlayerActivity(url);
     brls::Application::pushActivity(activity, brls::TransitionAnimation::NONE);
 }

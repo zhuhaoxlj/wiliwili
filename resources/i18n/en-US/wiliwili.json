@@ -481,5 +481,55 @@
   "dialog": {
     "not_supported": "Not Supported",
     "quit_hint": "Exiting app..."
+  },
+  "nas": {
+    "config": {
+      "header": "NAS Configuration",
+      "server": "Server Address",
+      "server_hint": "WebDAV server address",
+      "username": "Username",
+      "username_hint": "NAS login username",
+      "password": "Password",
+      "password_hint": "NAS login password",
+      "actions": "Actions",
+      "test": "Test Connection",
+      "save": "Save Configuration"
+    },
+    "status": {
+      "testing": "Testing connection...",
+      "success": "Connection successful!",
+      "saved": "Configuration saved",
+      "loading": "Loading..."
+    },
+    "error": {
+      "empty_server": "Please enter server address",
+      "invalid_server": "Invalid server address format",
+      "auth_failed": "Authentication failed, please check username and password",
+      "path_not_found": "Path not found",
+      "connection_failed": "Connection failed",
+      "not_configured": "NAS not configured",
+      "timeout": "Connection timeout, please check network",
+      "server_error": "Server error",
+      "network_error": "Network error",
+      "retry": "Retry",
+      "go_config": "Go to Config"
+    },
+    "browser": {
+      "folder": "Folder",
+      "file": "File",
+      "video": "Video",
+      "empty": "This directory is empty",
+      "items": "items",
+      "play_hint": "Playing"
+    },
+    "player": {
+      "error": {
+        "unsupported_format": "Unsupported video format",
+        "buffer_timeout": "Buffer timeout, network unstable",
+        "playback_failed": "Playback failed",
+        "retry": "Retry",
+        "back": "Back"
+      }
+    }
   }
 }

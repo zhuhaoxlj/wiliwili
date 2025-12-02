@@ -372,6 +372,19 @@ void MPVCore::init() {
     mpvSetOptionString(mpv, "vd-lavc-threads", "4");
     // This should fix random crash, but I don't know why.
     mpvSetOptionString(mpv, "opengl-glfinish", "yes");
+    // ASS 字幕字体配置
+    brls::Logger::info("Configuring ASS subtitle fonts for Switch...");
+    // 启用内嵌字体（MKV 中嵌入的字体）
+    mpvSetOptionString(mpv, "embeddedfonts", "yes");
+    // 设置字体目录让 libass 能找到备用中文字体
+    mpvSetOptionString(mpv, "sub-fonts-dir", "/config/wiliwili/fonts");
+    mpvSetOptionString(mpv, "osd-fonts-dir", "/config/wiliwili/fonts");
+    // 强制覆盖 ASS 字幕样式，使用我们指定的字体
+    // 这会忽略 ASS 字幕中指定的字体名称
+    mpvSetOptionString(mpv, "sub-ass-override", "force");
+    // 霞鹜文楷字体 (LXGW WenKai)
+    mpvSetOptionString(mpv, "sub-font", "LXGW WenKai");
+    brls::Logger::info("ASS subtitle font config: override=force, font=LXGW WenKai");
 #elif defined(PS4)
     mpvSetOptionString(mpv, "vd-lavc-threads", "6");
 #elif defined(__PSV__)

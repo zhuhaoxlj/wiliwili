@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "switch-mcp-server": {
+      "type": "streamableHttp",
+      "url": "http://192.168.0.157:12345/mcp",
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

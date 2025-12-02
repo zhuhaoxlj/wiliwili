@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "api/nas/webdav_client.hpp"
+#include "api/nas/nas_config.hpp"
+#include "view/recycling_grid.hpp"
 
 namespace brls {
 class Label;
@@ -19,7 +21,10 @@ class ProgressSpinner;
 class RecyclerFrame;
 }  // namespace brls
 
+class SVGImage;
+
 class WebDAVClient;
+class RecyclingGrid;
 
 /**
  * NAS 文件浏览 Activity
@@ -47,14 +52,18 @@ public:
 
 private:
     BRLS_BIND(brls::RecyclerFrame, fileList, "nas/file/list");
+    BRLS_BIND(RecyclingGrid, gridView, "nas/file/grid");
     BRLS_BIND(brls::Label, pathLabel, "nas/path/label");
     BRLS_BIND(brls::Label, statusLabel, "nas/status/label");
     BRLS_BIND(brls::Box, loadingBox, "nas/loading/box");
+    BRLS_BIND(brls::Box, viewToggleBox, "nas/view/toggle");
+    BRLS_BIND(SVGImage, viewToggleIcon, "nas/view/toggle/icon");
 
     std::string currentPath;
     std::string initialPath;
     std::unique_ptr<WebDAVClient> webdavClient;
     std::vector<WebDAVItem> currentItems;
+    NASViewMode viewMode = NASViewMode::List;
     
     // 用于检测 Activity 是否还存活，防止异步回调访问已释放的内存
     std::shared_ptr<bool> activityAlive = std::make_shared<bool>(true);
@@ -86,6 +95,16 @@ private:
      * 保存当前路径到配置
      */
     void saveCurrentPath();
+
+    /**
+     * 切换视图模式（列表/网格）
+     */
+    void toggleViewMode();
+
+    /**
+     * 根据当前视图模式更新视图可见性
+     */
+    void updateViewVisibility();
 
     /**
      * 播放视频文件
@@ -142,4 +161,47 @@ private:
     brls::Label* sizeLabel = nullptr;
     brls::Label* arrowLabel = nullptr;
     brls::Box* iconBox = nullptr;
+};
+
+/**
+ * NAS 网格视图数据源
+ * 用于在网格视图中显示视频文件和文件夹
+ */
+class NASGridDataSource : public RecyclingGridDataSource {
+public:
+    /**
+     * 构造函数
+     * @param activity NAS 浏览器 Activity 指针
+     * @param items 文件/文件夹列表指针
+     */
+    explicit NASGridDataSource(NASBrowserActivity* activity, std::vector<WebDAVItem>* items);
+
+    /**
+     * 返回列表项数量
+     */
+    size_t getItemCount() override;
+
+    /**
+     * 创建或复用指定位置的单元格
+     * @param recycler 网格视图
+     * @param index 位置索引
+     * @return 单元格指针
+     */
+    RecyclingGridItem* cellForRow(RecyclingGrid* recycler, size_t index) override;
+
+    /**
+     * 处理列表项选择事件
+     * @param recycler 网格视图
+     * @param index 位置索引
+     */
+    void onItemSelected(RecyclingGrid* recycler, size_t index) override;
+
+    /**
+     * 清空数据
+     */
+    void clearData() override;
+
+private:
+    NASBrowserActivity* activity;
+    std::vector<WebDAVItem>* items;
 };

@@ -5,10 +5,12 @@
 #include <borealis/core/i18n.hpp>
 #include <borealis/core/application.hpp>
 #include <borealis/core/thread.hpp>
+#include <borealis/core/touch/tap_gesture.hpp>
 #include <borealis/views/label.hpp>
 #include <borealis/views/recycler.hpp>
 #include <borealis/views/progress_spinner.hpp>
 #include <borealis/views/dialog.hpp>
+#include <borealis/views/image.hpp>
 
 #include "activity/nas_browser_activity.hpp"
 #include "api/nas/nas_config.hpp"
@@ -16,7 +18,9 @@
 #include "utils/config_helper.hpp"
 #include "utils/activity_helper.hpp"
 #include "utils/dialog_helper.hpp"
-#include "view/button_close.hpp"
+#include "view/nas_grid_cell.hpp"
+#include "view/svg_image.hpp"
+
 
 using namespace brls::literals;
 
@@ -112,11 +116,32 @@ void NASBrowserActivity::onContentAvailable() {
     // Create WebDAV client
     webdavClient = std::make_unique<WebDAVClient>(nasConfig);
 
-    // Register cell type
+    // Load saved view mode from config
+    viewMode = nasConfig.viewMode;
+
+    // Register cell type for list view
     fileList->registerCell("NASFileCell", []() { return NASFileCell::create(); });
 
-    // Set data source
+    // Set data source for list view
     fileList->setDataSource(new NASFileDataSource(this, &currentItems));
+
+    // Register cell type for grid view
+    if (gridView) {
+        gridView->registerCell("NASGridCell", []() { return NASGridCell::create(); });
+        gridView->setDataSource(new NASGridDataSource(this, &currentItems));
+    }
+
+    // Set up view toggle button
+    if (viewToggleBox) {
+        viewToggleBox->registerClickAction([this](brls::View* view) {
+            toggleViewMode();
+            return true;
+        });
+        viewToggleBox->addGestureRecognizer(new brls::TapGestureRecognizer(viewToggleBox));
+    }
+
+    // Apply initial view mode
+    updateViewVisibility();
 
     // Register back button handler
     this->registerAction(
@@ -188,8 +213,16 @@ void NASBrowserActivity::loadDirectory(const std::string& path) {
                     showStatus(std::to_string(currentItems.size()) + " " + "wiliwili/nas/browser/items"_i18n);
                 }
 
-                // Reload data
-                fileList->setDataSource(new NASFileDataSource(this, &currentItems));
+                // Reload data for the active view
+                if (viewMode == NASViewMode::List) {
+                    if (fileList) {
+                        fileList->setDataSource(new NASFileDataSource(this, &currentItems));
+                    }
+                } else {
+                    if (gridView) {
+                        gridView->setDataSource(new NASGridDataSource(this, &currentItems));
+                    }
+                }
 
                 // Save current path
                 saveCurrentPath();
@@ -250,6 +283,61 @@ void NASBrowserActivity::saveCurrentPath() {
     NASConfig nasConfig = conf.getNASConfig();
     nasConfig.lastPath = currentPath;
     conf.setNASConfig(nasConfig);
+}
+
+void NASBrowserActivity::toggleViewMode() {
+    brls::Logger::debug("NASBrowserActivity: toggleViewMode from {}", 
+        viewMode == NASViewMode::List ? "List" : "Grid");
+    
+    // Toggle between List and Grid
+    viewMode = (viewMode == NASViewMode::List) ? NASViewMode::Grid : NASViewMode::List;
+    
+    // Update view visibility
+    updateViewVisibility();
+    
+    // Save view mode to config
+    auto& conf = ProgramConfig::instance();
+    NASConfig nasConfig = conf.getNASConfig();
+    nasConfig.viewMode = viewMode;
+    conf.setNASConfig(nasConfig);
+    
+    brls::Logger::debug("NASBrowserActivity: toggleViewMode to {}", 
+        viewMode == NASViewMode::List ? "List" : "Grid");
+}
+
+void NASBrowserActivity::updateViewVisibility() {
+    bool isListMode = (viewMode == NASViewMode::List);
+    
+    // Show/hide views based on mode
+    if (fileList) {
+        fileList->setVisibility(isListMode ? brls::Visibility::VISIBLE : brls::Visibility::GONE);
+    }
+    
+    if (gridView) {
+        gridView->setVisibility(isListMode ? brls::Visibility::GONE : brls::Visibility::VISIBLE);
+    }
+    
+    // Update toggle button icon
+    // When in list mode, show grid icon (to switch to grid)
+    // When in grid mode, show list icon (to switch to list)
+    if (viewToggleIcon) {
+        if (isListMode) {
+            viewToggleIcon->setImageFromSVGRes("svg/ico-view-grid.svg");
+        } else {
+            viewToggleIcon->setImageFromSVGRes("svg/ico-view-list.svg");
+        }
+    }
+    
+    // Reload data source for the active view
+    if (isListMode) {
+        if (fileList) {
+            fileList->setDataSource(new NASFileDataSource(this, &currentItems));
+        }
+    } else {
+        if (gridView) {
+            gridView->setDataSource(new NASGridDataSource(this, &currentItems));
+        }
+    }
 }
 
 void NASBrowserActivity::playVideo(const WebDAVItem& item) {
@@ -341,6 +429,37 @@ void NASBrowserActivity::showErrorDialog(const std::string& message, bool showRe
     dialog->addButton("hints/back"_i18n, []() {});
 
     dialog->open();
+}
+
+// ============== NASGridDataSource Implementation ==============
+
+NASGridDataSource::NASGridDataSource(NASBrowserActivity* activity, std::vector<WebDAVItem>* items)
+    : activity(activity), items(items) {}
+
+size_t NASGridDataSource::getItemCount() {
+    return items ? items->size() : 0;
+}
+
+RecyclingGridItem* NASGridDataSource::cellForRow(RecyclingGrid* recycler, size_t index) {
+    NASGridCell* cell = dynamic_cast<NASGridCell*>(recycler->dequeueReusableCell("NASGridCell"));
+    
+    if (items && index < items->size()) {
+        cell->setItem((*items)[index]);
+    }
+    
+    return cell;
+}
+
+void NASGridDataSource::onItemSelected(RecyclingGrid* recycler, size_t index) {
+    if (items && index < items->size() && activity) {
+        activity->onItemSelected((*items)[index]);
+    }
+}
+
+void NASGridDataSource::clearData() {
+    if (items) {
+        items->clear();
+    }
 }
 
 NASBrowserActivity::~NASBrowserActivity() {

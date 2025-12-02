@@ -130,6 +130,7 @@ enum class SettingItem {
     NAS_PASSWORD,     // NAS 密码
     NAS_LAST_PATH,    // NAS 上次浏览路径
     NAS_ENABLED,      // NAS 是否已配置
+    NAS_VIEW_MODE,    // NAS 视图模式 (list/grid)
 };
 
 class APPVersion : public brls::Singleton<APPVersion> {

@@ -1,0 +1,62 @@
+<brls:Box
+        wireframe="false"
+        highlightCornerRadius="8"
+        axis="column"
+        width="auto"
+        height="auto">
+    
+    <!-- Thumbnail container -->
+    <brls:Box
+            id="nas/grid/thumbnail_box"
+            width="100%"
+            height="60%"
+            justifyContent="center"
+            alignItems="center"
+            backgroundColor="@theme/color/grey_1"
+            cornerRadius="4">
+        
+        <!-- Actual thumbnail image (hidden by default) -->
+        <brls:Image
+                id="nas/grid/thumbnail"
+                scalingType="fill"
+                height="100%"
+                width="100%"
+                visibility="gone"
+                cornerRadius="4"/>
+        
+        <!-- Placeholder icon (shown by default) -->
+        <SVGImage
+                id="nas/grid/placeholder"
+                positionType="absolute"
+                width="48"
+                height="48"
+                SVG="@res/svg/play-circle-video.svg"/>
+    </brls:Box>
+    
+    <!-- Info container -->
+    <brls:Box
+            margin="8"
+            axis="column"
+            width="100%"
+            grow="1">
+        
+        <!-- File/Folder name -->
+        <brls:Label
+                id="nas/grid/name"
+                fontSize="16"
+                singleLine="true"
+                width="100%"
+                height="20"
+                text="filename.mp4"
+                textColor="@theme/brls/text"/>
+        
+        <!-- File size -->
+        <brls:Label
+                id="nas/grid/size"
+                fontSize="13"
+                marginTop="4"
+                singleLine="true"
+                text=""
+                textColor="@theme/font/grey"/>
+    </brls:Box>
+</brls:Box>

@@ -28,6 +28,7 @@
 #include "utils/vibration_helper.hpp"
 #include "utils/ban_list.hpp"
 #include "utils/string_helper.hpp"
+#include "api/nas/nas_config.hpp"
 #include "utils/shortcut_helper.hpp"
 #include "presenter/video_detail.hpp"
 #include "activity/player_activity.hpp"
@@ -307,6 +308,7 @@ std::unordered_map<SettingItem, ProgramOption> ProgramConfig::SETTING_MAP = {
     {SettingItem::NAS_PASSWORD, {"nas_password", {}, {}, 0}},
     {SettingItem::NAS_LAST_PATH, {"nas_last_path", {}, {}, 0}},
     {SettingItem::NAS_ENABLED, {"nas_enabled", {}, {}, 0}},
+    {SettingItem::NAS_VIEW_MODE, {"nas_view_mode", {}, {}, 0}},
 };
 
 ProgramConfig::ProgramConfig() = default;
@@ -1280,6 +1282,9 @@ NASConfig ProgramConfig::getNASConfig() {
     config.password = getSettingItem(SettingItem::NAS_PASSWORD, std::string{""});
     config.lastPath = getSettingItem(SettingItem::NAS_LAST_PATH, std::string{"/"});
     config.enabled = getSettingItem(SettingItem::NAS_ENABLED, false);
+    // 读取视图模式，默认为列表视图
+    std::string viewModeStr = getSettingItem(SettingItem::NAS_VIEW_MODE, std::string{"list"});
+    config.viewMode = (viewModeStr == "grid") ? NASViewMode::Grid : NASViewMode::List;
     return config;
 }
 
@@ -1288,5 +1293,8 @@ void ProgramConfig::setNASConfig(const NASConfig& config) {
     setSettingItem(SettingItem::NAS_USERNAME, config.username, false);
     setSettingItem(SettingItem::NAS_PASSWORD, config.password, false);
     setSettingItem(SettingItem::NAS_LAST_PATH, config.lastPath, false);
-    setSettingItem(SettingItem::NAS_ENABLED, config.enabled, true);  // 最后一个保存时写入磁盘
+    setSettingItem(SettingItem::NAS_ENABLED, config.enabled, false);
+    // 保存视图模式
+    std::string viewModeStr = (config.viewMode == NASViewMode::Grid) ? "grid" : "list";
+    setSettingItem(SettingItem::NAS_VIEW_MODE, viewModeStr, true);  // 最后一个保存时写入磁盘
 }

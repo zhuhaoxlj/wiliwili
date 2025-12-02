@@ -8,6 +8,21 @@
 #include <nlohmann/json.hpp>
 
 /**
+ * NAS 视图模式枚举
+ * 用于切换列表视图和网格视图
+ */
+enum class NASViewMode {
+    List,   // 列表视图（默认模式）
+    Grid    // 网格视图（缩略图模式）
+};
+
+// NASViewMode JSON 序列化支持
+NLOHMANN_JSON_SERIALIZE_ENUM(NASViewMode, {
+    {NASViewMode::List, "list"},
+    {NASViewMode::Grid, "grid"}
+})
+
+/**
  * NAS 配置结构体
  * 用于存储飞牛 NAS (FNOS) 的 WebDAV 连接配置
  */
@@ -17,6 +32,7 @@ struct NASConfig {
     std::string password;    // 密码
     std::string lastPath;    // 上次浏览路径
     bool enabled = false;    // 是否已配置
+    NASViewMode viewMode = NASViewMode::List;  // 视图模式，默认列表视图
 
     /**
      * 构建完整的 WebDAV URL
@@ -49,4 +65,4 @@ struct NASConfig {
 };
 
 // JSON 序列化
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(NASConfig, serverUrl, username, password, lastPath, enabled);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(NASConfig, serverUrl, username, password, lastPath, enabled, viewMode);

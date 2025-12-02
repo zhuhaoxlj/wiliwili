@@ -1,0 +1,86 @@
+# Implementation Plan
+
+- [x] 1. Add view mode enum and config support
+  - [x] 1.1 Add NASViewMode enum to nas_config.hpp
+    - Define List and Grid enum values
+    - _Requirements: 1.5_
+  - [x] 1.2 Extend NASConfig struct with viewMode field
+    - Add viewMode field with default value List
+    - Update JSON serialization/deserialization
+    - _Requirements: 1.5_
+  - [ ]* 1.3 Write property test for config persistence
+    - **Property 2: View mode persistence round-trip**
+    - **Validates: Requirements 1.5**
+
+- [x] 2. Create NASGridCell component
+  - [x] 2.1 Create nas_grid_cell.hpp header file
+    - Define NASGridCell class extending RecyclingGridItem
+    - Declare setItem(), showPlaceholder() methods
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.2_
+  - [x] 2.2 Create nas_grid_cell.cpp implementation
+    - Implement setItem() to display filename and size
+    - Implement showPlaceholder() for folder/video icons
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.2_
+  - [x] 2.3 Create nas_grid_cell.xml layout file
+    - Design card layout with thumbnail, name, size labels
+    - _Requirements: 2.3, 2.4, 3.2_
+  - [ ]* 2.4 Write property tests for NASGridCell
+    - **Property 3: Video card displays filename**
+    - **Property 4: Video card displays file size**
+    - **Property 5: Folder card displays folder name**
+    - **Validates: Requirements 2.3, 2.4, 3.2**
+
+- [x] 3. Create NASGridDataSource
+  - [x] 3.1 Add NASGridDataSource class to nas_browser_activity
+    - Implement getItemCount(), cellForRow(), onItemSelected()
+    - Handle both video files and folders
+    - _Requirements: 1.3, 3.3_
+  - [ ]* 3.2 Write property test for folder navigation
+    - **Property 6: Folder selection navigates**
+    - **Validates: Requirements 3.3**
+
+- [x] 4. Update NASBrowserActivity for dual view support
+  - [x] 4.1 Add view mode toggle button to header XML
+    - Add SVGImage button in nas_browser_activity.xml
+    - Position next to status label
+    - _Requirements: 1.1_
+  - [x] 4.2 Add RecyclingGrid to activity XML
+    - Add grid view component alongside existing list view
+    - Set initial visibility to gone
+    - _Requirements: 1.3_
+  - [x] 4.3 Implement view mode toggle logic in activity
+    - Add viewMode member variable
+    - Implement toggleViewMode() method
+    - Update button icon on toggle
+    - _Requirements: 1.2_
+  - [x] 4.4 Implement updateViewVisibility() method
+    - Show/hide list and grid views based on mode
+    - Reload data source for active view
+    - _Requirements: 1.3, 1.4_
+  - [ ]* 4.5 Write property test for view mode toggle
+    - **Property 1: View mode toggle is idempotent cycle**
+    - **Validates: Requirements 1.2**
+
+- [x] 5. Integrate view mode persistence
+  - [x] 5.1 Load view mode from config on activity start
+    - Read viewMode from NASConfig in onContentAvailable()
+    - Apply saved view mode
+    - _Requirements: 1.5_
+  - [x] 5.2 Save view mode to config on toggle
+    - Update NASConfig when view mode changes
+    - Persist to storage
+    - _Requirements: 1.5_
+
+- [x] 6. Add placeholder icons and resources
+  - [x] 6.1 Add video placeholder SVG icon
+    - Create or use existing video icon for placeholder
+    - _Requirements: 2.2_
+  - [x] 6.2 Add folder icon for grid view
+    - Create or use existing folder icon
+    - _Requirements: 3.1_
+  - [x] 6.3 Add view toggle icons (list/grid)
+    - Add SVG icons for toggle button states
+    - _Requirements: 1.1_
+
+- [ ] 7. Final Checkpoint
+  - Ensure all tests pass, ask the user if questions arise.

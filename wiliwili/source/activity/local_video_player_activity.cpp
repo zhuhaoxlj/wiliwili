@@ -8,7 +8,11 @@
 #include "utils/event_helper.hpp"
 #include <borealis/core/logger.hpp>
 #include <borealis/core/application.hpp>
+#include <borealis/core/i18n.hpp>
+#include <borealis/core/thread.hpp>
 #include <borealis/views/dialog.hpp>
+
+using namespace brls::literals;
 
 LocalVideoPlayerActivity::LocalVideoPlayerActivity(const std::string& filepath) 
     : videoPath(filepath) {

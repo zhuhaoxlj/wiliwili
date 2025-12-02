@@ -17,7 +17,7 @@ sha256sums=(
   'SKIP'
 )
 makedepends=('switch-pkg-config' 'dkp-toolchain-vars')
-depends=('switch-ffmpeg' 'deko3d' 'libuam' 'switch-liblua51')
+depends=('switch-ffmpeg' 'deko3d' 'libuam' 'switch-liblua51' 'switch-libass')
 groups=('switch-portlibs')
 
 prepare() {
@@ -41,7 +41,7 @@ build() {
     --prefix="${PORTLIBS_PREFIX}" --disable-libmpv-shared \
     --enable-libmpv-static --disable-cplayer --disable-sdl2 \
     --disable-gl --disable-plain-gl --enable-lua \
-    --enable-deko3d --enable-hos-audio \
+    --enable-deko3d --enable-hos-audio --enable-libass \
     --disable-iconv --disable-jpeg --disable-libavdevice --disable-debug-build
   sed -i 's/#define HAVE_POSIX 1/#define HAVE_POSIX 0/' build/config.h
   ./waf build

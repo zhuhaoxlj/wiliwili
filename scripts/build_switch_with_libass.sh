@@ -36,12 +36,23 @@ fi
 # 安装必需的系统包
 echo "安装必需的系统包..."
 dkp-pacman -Sy --noconfirm
-dkp-pacman -S --noconfirm --needed switch-dev switch-curl switch-libplacebo switch-freetype switch-libfribidi switch-liblua51 switch-mesa dkp-meson-scripts
+dkp-pacman -S --noconfirm --needed switch-dev switch-curl switch-libplacebo switch-freetype switch-libfribidi switch-liblua51 switch-mesa switch-sdl2 dkp-meson-scripts dkp-toolchain-vars
 
 # 安装 meson 和 ninja（如果不存在）
 if ! command -v meson &> /dev/null; then
     echo "安装 meson 和 ninja..."
-    apt-get update && apt-get install -y meson ninja-build
+    if [ "$OS_TYPE" = "Darwin" ]; then
+        # macOS 使用 Homebrew
+        if command -v brew &> /dev/null; then
+            brew install meson ninja
+        else
+            echo "错误：未找到 Homebrew，请先安装 meson：brew install meson"
+            exit 1
+        fi
+    else
+        # Linux 使用 apt-get
+        apt-get update && apt-get install -y meson ninja-build
+    fi
 fi
 
 # 安装 libuam
@@ -227,11 +238,13 @@ fi
 
 echo "编译配置: Unity Build=$UNITY_BUILD, Batch Size=$UNITY_BATCH_SIZE, Jobs=$BUILD_JOBS"
 
-# 注意：不使用 USE_DEKO3D，使用 OpenGL 渲染
+# 注意：不使用 USE_DEKO3D，使用 SDL2 + OpenGL 渲染
+# 必须设置 USE_SDL2=ON，否则会回退到 GLFW（Switch 上不可用）
 # 禁用 Unity Build 以避免 lunasvg 符号重定义问题
 cmake -B ${BUILD_DIR} -DCMAKE_BUILD_TYPE=Release \
     -DBUILTIN_NSP=OFF \
     -DPLATFORM_SWITCH=ON \
+    -DUSE_SDL2=ON \
     -DBRLS_UNITY_BUILD=OFF \
     -DCMAKE_UNITY_BUILD=OFF
 

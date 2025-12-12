@@ -192,6 +192,8 @@ elseif (PLATFORM_PSV)
 elseif (PLATFORM_SWITCH)
     # System service initialization functions required for libnx
     list(APPEND MAIN_SRC ${BOREALIS_LIBRARY}/lib/platforms/switch/switch_wrapper.c)
+    # Fix multiple definition errors between libEGL.a and libuam.a (both contain Mesa symbols)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
 elseif (PLATFORM_PS4)
     # Show backtrace when app crash
     list(APPEND MAIN_SRC ${BOREALIS_LIBRARY}/lib/platforms/ps4/crashlog.c)

@@ -10,7 +10,10 @@
       "mcp__serena__search_for_pattern",
       "mcp__serena__activate_project",
       "mcp__serena__check_onboarding_performed",
-      "mcp__serena__get_symbols_overview"
+      "mcp__serena__get_symbols_overview",
+      "Bash(brew list:*)",
+      "Bash(ls:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []
